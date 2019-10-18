@@ -6,7 +6,7 @@ library(euR)
 library(colorspace)
 library(GGally)
 
-# Data Visualization Tasks ------------------------------------------------
+# Intro R, Data Visualization ------------------------------------------------
 # Task 1:
 View(mpg)
 ggplot(data = mpg) +
@@ -284,7 +284,7 @@ ggpairs(patents)
 data(patents)
 ggplot(patents, aes(x = logtotal, color = densitycat)) + geom_density()
 
-# Slides for Session 5, Intro to R ----------------------------------------
+# Intro R, Slide 5 ----------------------------------------
 data("Matches")
 str(Matches)
 
@@ -367,7 +367,7 @@ reordered_sum_grp_matches <- sum_grp_matches
 reordered_sum_grp_matches$Season <- fct_rev(sum_grp_matches$Season)
 head(reordered_sum_grp_matches)
 
-# Slides for Session 6, Intro to R ----------------------------------------
+# Intro R, Slide 6 ----------------------------------------
 library(DBI)
 library(RSQLite)
 drv <- dbDriver("SQLite")
@@ -384,7 +384,7 @@ left_join(band_members, band_instruments)
 right_join(band_members, band_instruments)
 full_join(band_members, band_instruments)
 
-# Advanced R, Slides for Session 1 ----------------------------------------
+# Adv R, Slide 1 ----------------------------------------
 data("cityweather")
 head(cityweather)
 ?cityweather
@@ -437,14 +437,14 @@ powers(5)
 # output
 # function
 
-# Exercise 1.1.a ----------------------------------------------------------
+# Adv R, Slide 1, Ex 1.1.a ----------------------------------------------------------
 pow <- function(x, power) {
   x ^ power
 }
 pow(x = 1:5, power = 5)
 pow(x = pi, power = -2)
 
-# Exercise 1.1.b ----------------------------------------------------------
+# Adv R, Slide 1, Ex 1.1.b ----------------------------------------------------------
 # this is my own which does not work
 odd <- function(x) {
   remainder = x %% 2
@@ -496,7 +496,7 @@ odd <- function(x) {
 # Test function
 odd(1:10)
 
-# Exercise 1.1.c ----------------------------------------------------------
+# Adv R, Slide 1, Ex 1.1.c ----------------------------------------------------------
 # Test case
 x <- c(1, 2)
 y <- (1 * x ^ 2) + (1 * x) + 0
@@ -519,7 +519,7 @@ c <- 1
 # Calculations
 a*x^2 + b*x + c
 
-# Exercise 1.1.d ----------------------------------------------------------
+# Adv R, Slide 1, Ex 1.1.d ----------------------------------------------------------
 # Test case
 (a * x ^ 2) + (b * x) + c
 a <- 1
@@ -555,7 +555,7 @@ cityweather <- map_df(cityweather, scale01)
 map(cityweather, min)
 map_dbl(cityweather, max)
 
-# Exercise 2.1.a ----------------------------------------------------------
+# Adv R, Slide 1, Ex 2.1.a ----------------------------------------------------------
 a <- map_df(cityweather, median)
 b <- map_df(cityweather, mad)
 c <- rbind(a, b)
@@ -578,7 +578,8 @@ res <- map_df(cityweather, median_mad)
 res %>% mutate(Statistics = c("median", "mad")) %>% 
   select(Statistics, everything())
 
-# Exercsie 2.1.c ----------------------------------------------------------
+# Adv R, Slide 1, Ex 2.1 ----------------------------------------------------------
+## Exercies 2.1.a
 map_df(cityweather, class)
 
 class <- function (x) {
@@ -645,7 +646,10 @@ head(Affairs)
 map(Affairs, class)
 str(Affairs)
 
-# Conditional statements
+
+
+
+# ADv R, Slide 1, Conditions -------------------------------------------------------
 # the condition should only be of one element
 num_mean <- function(x, na.rm = TRUE) {
   if (is.numeric(x)) {
@@ -711,7 +715,7 @@ num_median <- function (x) {
 map(Prestige, num_median)
 map_df(Prestige, num_median)
 
-# Exercsie 3.1.b
+# Adv R, Slide 1, Ex 3.1. ---------------------------------------------------
 data("vwgolf")
 View(vwgolf)
 
@@ -725,7 +729,8 @@ num_category <- function(x, na.rm = TRUE){
 map(vwgolf, num_category)
 
 
-# Exercise 3.2.a
+# Adv R, Slide 1, Ex 3.2 ---------------------------------------------------
+## Exercise 3.2.a
 x <- Prestige$type
 if (is.numeric(x)) {
   quantile(x)
@@ -757,7 +762,6 @@ my_summary <- function(x) {
 map(Prestige, my_summary)
 
 # Exercise 3.2.b
-
 solve_quadratic2 <- function (a, b, c) {
   if ((b ^ 2 - 4 * a * c) > 0) {
     y1 = (-b + sqrt(b ^ 2 - 4 * a * c))/(2 * a)
@@ -772,4 +776,887 @@ solve_quadratic2 <- function (a, b, c) {
 solve_quadratic2(a = 40, b = 11, c = -7)
 solve_quadratic(a = 1, b = 2, c = 1)
 solve_quadratic2(a = 1, b = 1, c = 1)
+
+# Adv R, Slide 1, Ex 1.2.a & b -----------------------------------------------------------
+prop_below2 <- function(x, threshold, na.rm = TRUE) {
+  sum(x <= threshold, na.rm = na.rm) / (length(x) - sum(is.na(x)))
+}
+prop_below2(1:100, 5)
+prop_below2(c(1:100, NA), 50)
+
+# Adv R, Slide 1, Ex 1.2.c ---------------------------------------------------------
+# I can write a function that can produce a random sample with mean and SD.
+
+my_rnorm <- function(n, mean, sd) {
+  output <- c(mean + sd * scale(rnorm(n)))
+}
+my_rnorm(1000, 0, 1)
+prop_below2(my_rnorm(1000, 0, 1), 1.96)
+
+# Adv R, Slide 1, Ex 1.3.a ---------------------------------------------------------
+x <- seq(-pi, pi, length.out = 100)
+d <- data.frame(x = x, y = sin(x))
+ggplot(d, aes(x = x, y = y)) +
+  geom_line()
+
+draw_curve2 <- function(low, high, length) {
+  x <- seq(low, high, length.out = length)
+  df <- data.frame(x = x, y = sin(x))
+  ggplot(df, aes(x = x, y = y)) +
+    geom_line()
+}
+draw_curve2(-pi, pi, 100)
+draw_curve2(0, pi / 2, 100)
+
+num_mean <- function(x, na.rm = TRUE) {
+  if (is.numeric(x)) {
+    mean(x, na.rm = na.rm)
+  } else {
+    NaN
+  }
+}
+map_dbl(Affairs, num_mean)
+
+# Adv R, Slide 1, Ex 1.4.a ---------------------------------------------------------
+
+
+# Adv R, Slide 1, Ex 3.3 --------------------------------------------------
+
+## Exercise 3.3.a
+# Test case
+vwgolf2 <- vwgolf
+test <- (vwgolf2$RoadTaxPM - mean(vwgolf2$RoadTaxPM)) / (sd(vwgolf2$RoadTaxPM))
+mean(test)
+all.equal(mean(test), 0)
+sd(test)
+
+# Turn into function
+scale_mean_sd <- function(x) {
+  if(is.numeric(x)) {
+    (x - mean(x)) / sd(x)
+  } else {
+    x
+  }
+}
+scale_mean_sd(vwgolf2$Version)
+
+scale_mean_sd <- function(data) {
+  scale_mean <- function(column) {
+    if(is.numeric(column)) {
+      (column - mean(column)) / sd(column)
+    } else {
+      column
+    }
+  }
+  modify(data, scale_mean)
+}
+
+scaled_vwgolf <- scale_mean_sd(vwgolf2)
+View(scaled_vwgolf)
+
+scaled_cityweather <- scale_mean_sd(cityweather)
+View(scaled_cityweather)
+
+map_dbl(scaled_vwgolf, function(x) if (is.numeric(x)) mean(x, na.rm = TRUE) else NA)
+map_dbl(scaled_vwgolf, function(x) if (is.numeric(x)) sd(x, na.rm = TRUE) else NA)
+
+# Adv R, Slide 1, Ex 3.4 --------------------------------------------------
+## Solution in the calss
+# 0. Inputs
+switch <- TRUE
+
+# 1. Setup the game
+doors <- paste("door", 1:3)
+correct_door <- sample(doors, 1)
+
+# 2. Contestant Guesses
+guessed_door <- sample(doors, 1)
+
+# 3. Host opens a door
+cannot_open <- union(correct_door, guessed_door)
+can_open <- setdiff(doors, cannot_open)
+opened_door <- sample(can_open)
+
+# 4. contestant applies his/her strategy
+if (switch) {
+  cannot_switch_to <- union(guessed_door, opened_door)
+  guessed_door <- setdiff(doors, cannot_switch_to)
+}
+
+# 5. Check what the contestant won
+guessed_door == correct_door
+
+# 6. Turn it into a function
+monty_hall <- function(switch) {
+  doors <- paste("door", 1:3)
+  correct_door <- sample(doors, 1)
+  guessed_door <- sample(doors, 1)
+  cannot_open <- union(correct_door, guessed_door)
+  can_open <- setdiff(doors, cannot_open)
+  opened_door <- sample(can_open)
+  if (switch) {
+    cannot_switch_to <- union(guessed_door, opened_door)
+    guessed_door <- setdiff(doors, cannot_switch_to)
+  }
+  guessed_door == correct_door
+}
+
+# 7. Play many games
+monty_hall(switch = TRUE)
+monty_hall(switch = FALSE)
+
+# 8. Iterate
+b <- 100
+res_true <- replicate(b, monty_hall(TRUE))
+mean(res_true)
+
+# Exercise 3.4.a
+monty_hall <- function(switch) {
+  switch <- TRUE
+  set1 <- paste("door", 1:3)
+  correct_door <- sample(set1, 1)
+  guessed_door <- sample(set1, 1)
+  cannot_open <- union(correct_door, guessed_door)
+  can_open <- setdiff(set1, cannot_open)
+  opened_door <- sample(can_open, 1)
+  remaining_door <- setdiff(set1, union(opened_door, guessed_door))
+  if (switch == TRUE) {
+    guessed_door <- remaining_door
+  }
+  guessed_door == correct_door
+}
+set.seed(4155)
+monty_hall(TRUE)
+monty_hall(FALSE)
+
+# Exercise 3.4.b
+reps <- 100000
+results_TRUE <- replicate(reps, monty_hall(TRUE))
+mean(results_TRUE)
+
+results_FALSE <- replicate(reps, monty_hall(FALSE))
+mean(results_FALSE)
+
+# Adv R, Slide 2, Ex 1.1 --------------------------------------------------
+city <- c("Amsterdam", "Rotterdam", "Den Haag", "Utrecht", "Eindhovem",
+          "Tilburg", "Almore")
+province <- c("NH", "ZH", "ZH", "UT", "NB", "NB", "FL")
+population <- c(860, 641, 534, 349, 230, 216, 205)
+province_population <- c(ZH = 3607, NH = 2776,
+                         NB = 2495, UT = 1268,
+                         GD = 2031, FL = 403)
+## Ex 1.1.a
+population[c(3, 5, 7)]
+
+## Ex 1.1.b
+city[-c(2, 4, 7)]
+city[c(1, 3, 5, 6)]
+city[c(-2, -4, -7)]
+
+## Ex 1.1.c
+city[province == "UT"]
+city[province == "NB"]
+c(city[province == "UT"], city[province == "NB"])
+city[province == "UT" | province == "NB"]
+# This is the ideal one
+city[province %in% c("UT", "NB")]
+city[which(province == "UT" | province == "NB")]
+
+## Ex 1.1.d
+sum(population[province == "ZH"])
+sum(
+  population[which(province == "ZH")]
+)
+
+## Ex 1.1.e
+n <- length(city)
+city[(n-1):n]
+length(city)
+
+city[c(
+  (length(city) - 1),
+  (length(city) - 2)
+)]
+
+## Ex 1.1.f
+#' We can solve this by merging the two and making a data frame.
+
+# 1. Find province population for each city
+province_population[province]
+# 2. Divide the city population by province population
+population / province_population[province]
+# 3. Turn it into a percentage
+100 * population / province_population[province]
+# 4. Fix names
+res <- 100 * population / province_population[province]
+names(res) <- city
+res
+
+
+# Adv R, Slide 2, Ex 2.1 -----------------------------------------------------------
+# Ex 2.1.a
+city
+sort(city)
+sort(city, decreasing = TRUE)
+city[order(city)]
+
+# Ex 2.1.b
+sort(province, decreasing = TRUE)
+order(province, decreasing = TRUE)
+city[order(province, decreasing = TRUE)]
+
+# Ex 2.1.c
+population
+order(province, city)
+population[order(province, city)]
+
+province[order(province, city)]
+city[order(province, city)]
+
+# Ex 2.1.d
+names(province_population)[1] <- c("Zuid-Holland")
+
+# Ex 2.1.e
+population[city == "Rotterdam"] <- paste0(population[city == "Rotterdam"], "*")
+population
+typeof(population)
+
+
+# Adv R, Slide 2, Ex 3.1 ---------------------------------------------------------
+load("/Users/mr.hsp/Documents/Erasmus University - RSM/Courses/Advanced R 2019/hot100.RData")
+str(chart_weeks)
+
+# Ex 3.1.a
+song_title[10]
+artists[10]
+featured_artists[10]
+main_artists[10]
+
+# Ex 3.1.b
+which(song_title == "Let Me Go")
+main_artists[which(song_title == "Let Me Go")]
+main_artists[[which(song_title == "Let Me Go")]]
+main_artists$'Let Me Go'
+
+main_artists[["Let Me Go"]]
+featured_artists[["Let Me Go"]]
+
+# Ex 3.1.c
+main_artists[1:5]
+
+# Adv R, Slide 2, 3.2 -----------------------------------------------------
+
+## In-calss solution
+
+# 1. Function for one vector of ranks, and one value of k
+
+# Test case
+n <- 8
+r <- sample.int(n)
+k <- 4
+
+# Calculations
+r[seq_len(k)]
+best_explore <- min(r[seq_len(k)])
+r < best_explore
+seq_along(r) > k
+potential_matches <- r < best_explore & seq_along(r) > k
+matched_rank <- if(any(potential_matches)) {
+  ind_match <- which(potential_matches)[1]
+  r[ind_match]
+} else {
+  r[length(r)]
+}
+
+# Return
+matched_rank
+
+# Function
+match_partner <- function(r, k){
+  best_explore <- min(r[seq_len(k)])
+  potential_matches <- r < best_explore & seq_along(r) > k
+  matched_rank <- if(any(potential_matches)) {
+    ind_match <- which(potential_matches)[1]
+    r[ind_match]
+  } else {
+    r[length(r)]
+  }
+  matched_rank
+}
+
+# Test the function again
+r <- sample.int(n)
+match_partner(r, 1)
+match_partner(r, 2)
+match_partner(r, 3)
+match_partner(r, 4)
+
+# 2. Function that handles once vector of ransk but for all k
+n <- length(r)
+map(1:(n-1), match_partner, r = r)
+
+match_all <- function(r) {
+  n <- length(r)
+  map_int(seq_len(n - 1), match_partner, r = r)
+}
+
+# Function
+match_all(r)
+
+# 3. Run this repeatedly for many vectros of ranks
+
+# Test case
+reps <- 100
+n <- 8
+
+r <- sample.int(n)
+match_all(r)
+
+res <- replicate(reps, match_all(sample.int(n)))
+
+prop_matches <- rowMeans(res == 1)
+
+data.frame(prop_explore = seq_len(n - 1) / n,
+           prop_matches = prop_matches)
+
+rep_match_all <- function(reps, n) {
+   res <- replicate(reps, match_all(sample.int(n)))
+   prop_matches <- rowMeans(res == 1)
+   data.frame(prop_explore = seq_len(n - 1) / n,
+              prop_matches = prop_matches)
+}
+
+rep_match_all(1000, 40)
+plot(rep_match_all(1000, 40))
+
+## 3.2.a) my own solution
+match_partner <- function(r, k) {
+  n <- length(r)
+  best_rank_seen <- min(r[seq_len(k)])
+  better_choice <- r < best_rank_seen & seq_len(n) > k
+  chosen_partner <- if (any(better_choice)) {
+    which(better_choice)[1]
+  } else {
+    n
+  }
+  chosen_rank <- r[chosen_partner]
+  chosen_rank
+}
+
+
+x <- 10
+r <- sample.int(x)
+r
+k <- 3
+n <- length(r)
+best_rank_seen <- min(r[seq_len(k)])
+better_choice <- r < best_rank_seen & seq_len(n) > k
+chosen_partner <- if (any(better_choice)) {
+  which(better_choice)[1]
+} else {
+  n
+}
+chosen_rank <- r[chosen_partner]
+chosen_rank
+
+# Adv R, Slide 2, Ex 3.3 -----------------------------------------------------
+
+# Adv R, Slide 2, Ex 3.4 -----------------------------------------------------
+
+
+# Adv R, Slide 3 ----------------------------------------------------------
+
+for (i in 1:5) {
+  1:i
+  cat("Iteration", i, "\n")
+}
+
+
+# Adv R, Slide 3, Ex 1.1 --------------------------------------------------
+# Exercise 1.1.a
+data("cityweather")
+
+map(cityweather, max)
+map_dbl(cityweather, max)
+
+# 1. Output
+ncol(cityweather)
+length(cityweather)
+output <- vector("double", ncol(cityweather))
+
+# Just something funny: rep(NA, ncol(cityweather))
+
+# 2. Iterating
+seq_along(cityweather)
+names(cityweather)
+for (i in seq_along(cityweather)) {
+  output[[i]] <- max(cityweather[[i]])
+}
+
+# 3. Body
+i <- 2
+cityweather[[i]]
+cityweather[i]
+
+max(cityweather[[i]])
+
+# 4. Everything
+output <- vector("double", ncol(cityweather))
+for (i in seq_along(cityweather)) {
+  output[[i]] <- max(cityweather[[i]])
+}
+output
+names(output) <- names(cityweather)
+output
+
+# My solution
+output <- vector("double", ncol(cityweather))
+for (i in seq_along(cityweather)) {
+  output[[i]] <- max(cityweather[[i]])
+}
+output
+
+# Exercise 1.1.b
+
+# 1. Output
+data.frame(median = vectro("double", ncol(cityweather)),
+           mad = vector("double", ncol(cityweather)))
+# or
+res <- as.data.frame(matrix(0, ncol(cityweather), 2))
+res <- matrix(0, ncol(cityweather), 2)
+colnames <- c("median", "mad")
+res <- as.data.frame(res)
+res
+
+# 2. Iterating
+seq_along(cityweather)
+for (i in seq_along(cityweather)) {
+}
+
+# 3. Body
+i <- 3
+res[i, ] <- c(median(cityweather[[i]]),
+  mad(cityweather[[i]]))
+
+# 4. Everything
+res <- data.frame(median = vector("double", ncol(cityweather)),
+           mad = vector("double", ncol(cityweather)))
+for (i in seq_along(cityweather)) {
+  res[i, ] <- c(median(cityweather[[i]]),
+                mad(cityweather[[i]]))
+}
+res
+res$variable <- names(cityweather)
+res[, c(3, 1:2)]
+names(res)
+
+# My solution
+output <- vector("double", ncol(cityweather))
+for (i in seq_along(cityweather)) {
+  output[[i]] <- median(cityweather[[i]])
+}
+output
+
+
+# Adv R, Slide 3, Ex 1.2 --------------------------------------------------
+
+# Test case
+x <- rnorm(10)
+max(x)
+
+# Calculations
+
+# 1. Output
+res <- x[1]
+# or -Inf
+
+# 2. Iteration
+seq_along(x)
+
+# 3. Body
+i <- 10
+if (x[i] > res) {
+  res <- x[i]
+}
+
+# 4. Loop
+res <- x[1]
+for (i in seq_along(x)) {
+  if (x[i] > res) {
+    res <- x[i]
+  }
+}
+res
+
+# Function
+my_max <- function(x) {
+  res <- x[1]
+  for (i in seq_along(x)) {
+    if (x[i] > res) {
+      res <- x[i]
+    }
+  }
+  res
+}
+
+x <- rnorm(10)
+
+
+# My solution
+# Output
+output
+
+# Iteration
+seq_along(x)
+for (i in seq_along(x)) {
+  output[[i]] <- max(x[[i]])
+}
+
+# Body
+
+# Loop
+x <- c(1, 4, 2, 3)
+max_x <- vector("double", 1)
+for (i in seq_along(x)) {
+  max_x <- max(x)
+}
+max_x
+
+x <- rnorm(1000)
+max(x)
+
+# Adv R, Slide 3, Ex 1.3 --------------------------------------------------
+
+# Exercise 1.3.a
+# Test
+n <- 10
+factorial(n)
+# Loop
+res <- 1
+for (i in seq_len(n)) {
+  res <- res * i
+  cat("Iteration:", i, "Value", res, "\n", sep = " ")
+}
+res
+prod(seq_len(n))
+
+# While - Solution 1
+result <- 1
+i <- 0
+while (i < n) {
+  # We have to stop the counter
+  i <- i + 1
+  cat("Value:", i, "\n")
+  result <- result * i
+}
+result
+
+# While - Solution 2
+result <- 1
+i <- 1
+while (i <= n) {
+  # We have to stop the counter
+  cat("Value:", i, "\n")
+  result <- result * i
+  i <- i + 1
+}
+result
+
+# Adv R, Slide 3, Ex 2.4 --------------------------------------------------
+
+## Inclass Solution
+
+# Test case
+x <- sample.int(50)
+sort(x)
+
+# 1. Inner Loop: Swaps
+
+# 2. Outer loop: repeat 1 until sorted
+len_x <- length(x)
+swaps <- len_x - 1
+j <- 0
+while (swaps > 0) {
+  swaps <- 0
+  for (i in seq_len(len_x - 1)) {
+    if (x[i + 1] < x[i]) {
+      x[i:(i + 1)] <- rev(x[i:(i + 1)])
+      swaps <- swaps + 1
+    }
+  }
+  j <- j + 1
+}
+x
+j
+
+# 1. For loop
+x
+len_x <- length(x)
+swaps <- 0
+for (i in seq_len(len_x - 1)) {
+  if (x[i + 1] < x[i]) {
+    x[i:(i + 1)] <- rev(x[i:(i + 1)])
+    swaps <- swaps + 1
+  }
+}
+x
+swaps
+
+# Output: updated x, swaps
+
+# iteration sequence
+
+# Body: make all swaps
+
+x <- c(1, 0, 3, 2, 1, 6)
+y <- x
+i <- 1
+iterate <- TRUE
+while (i <= length(x)-1) {
+  iterate <- FALSE
+  if (y[[i]] > y[[i + 1]]) {
+    y[[i + 1]] <- y[[i]]
+    y[[i]] <- x[[i + 1]]
+    iterate <- TRUE
+  }
+  i <- i + 1
+}
+y
+
+
+# Adv R, slide 3, Debugging -----------------------------------------------
+x <- c(1, 1, 0, 1, 1, 1)
+
+find_runs <- function(x, k = 2, value = 1) {
+  len_x <- length(x)
+  runs <- vector("integer", 0)
+  for (i in 1:(len_x - k)) {
+    if (all(x[i:i + k - 1] == value)) {
+      runs <- c(runs, i)
+    }
+  }
+  runs
+}
+
+find_runs(x)
+
+source(find_runs)
+
+load("/Users/mr.hsp/Downloads/find_runs.R")
+
+
+
+# Adv R, Slide 3, Exercise 2.3 --------------------------------------------
+
+# In-class solution
+
+# Test case
+x <- 11 # 1011
+
+# Code to represent x in binary
+floor
+
+5 %% 2 # Modulo
+5 %/% 2 # Integer division
+floor(5/2)
+
+power <- floor(log2(x))
+
+output <- integer(power + 1)
+
+# Starter with 2^3
+x/ 2 ^ power
+x %/% 2 ^ power
+output[power + 1] <- 1
+remainder <- x %% 2 ^ power
+
+# Continue with remainder
+power <- floor(log2(remainder))
+output[power + 1] <- 1
+remainder <- remainder %% 2 ^ power
+power <- floor(log2(remainder))
+output[power + 1] <- 1
+remainder <- remainder %% 2 ^ power
+
+# Loop
+x <- 111
+# Initializing remainder
+remainder <- x
+# Settin up output
+power <- floor(log2(remainder))
+output <- integer(power + 1)
+
+while (remainder > 0) {
+  power <- floor(log2(remainder))
+  output[power + 1] <- 1
+  remainder <- remainder %% 2^power
+  cat(output, "\n")
+}
+output
+rev(output)
+output[length(output):1]
+paste(rev(output), collapse = "")
+
+
+# Test case
+x <- 12 # 1011
+# 11 = 1*2^3 + 0
+
+x <- 11
+y <- x
+i <- 1
+output <- vector("integer", power + 1)
+while (y > 1) {
+  power1 <- floor(log2(y))
+  output[[power1 + 1]] <- if (power1 != 0 ) {
+    1
+  } else {
+    0
+  }
+  y <- y - 2 ^ power1
+  i <- i + 1
+}
+output
+
+
+
+floor(log2(3))
+
+# code to represent x in binary
+power1 <- floor(log2(x))
+col <- if (power1 != 0 ) {
+  1
+} else {
+  0
+}
+
+y <- x - 2 ^ power1
+
+
+
+r2 <- floor(log2(r1))
+y2 <- floor(log2(r2))
+1 * 2 ^ (r1)
+
+
+# Adv R, Slide 4, Ex 1.5 --------------------------------------------------
+
+# In-class Solution
+n <- 10
+
+pos <- seq_len(n)
+cur_rem <- length(pos)
+pos <- kill(pos)
+if(cur_rem %% 2 == 1) {
+  pos <- c(pos[lenght(pos)], pos[-length(pos)])
+}
+cur_rem <- length(pos)
+
+## Loop
+n <- 10
+
+pos <- seq_len(n)
+cur_rem <- length(pos)
+
+while (cur_rem > 1) {
+  pos <- kill(pos)
+  # Move last one to front if odd number
+  if(cur_rem %% 2 == 1) {
+    pos <- c(pos[lenght(pos)], pos[-length(pos)])
+  }
+  # Update the number remaining
+  cur_rem <- length(pos)
+}
+
+josephus <- function(n) {
+  pos <- seq_len(n)
+  cur_rem <- length(pos)
+  
+  while (cur_rem > 1) {
+    pos <- kill(pos)
+    # Move last one to front if odd number
+    if(cur_rem %% 2 == 1) {
+      pos <- c(pos[length(pos)], pos[-length(pos)])
+    }
+    # Update the number remaining
+    cur_rem <- length(pos)
+  }
+  pos
+}
+
+v <- c(1, 2, 3, 7)
+
+b <- c(v[length(v)], v[-length(v)])
+
+josephus(10)
+
+# First round: eliminate even position
+ind_even <- seq_along(orig_pos) %% 2 == 0
+rem_pos <- orig_pos[!ind_even]
+
+kill <- function(pos) {
+  ind_even <- seq_along(pos) %% 2 == 0
+  pos[!ind_even]
+}
+
+kill(1:10)
+kill(c(1, 3, 5, 7, 9))
+kill(c(9, 1, 5))
+kill(c(9, 5))
+
+
+# Atabak's code for this problem
+  saveds <- function (n){
+    people <- (1:n)
+    saved <- people
+    while (length(saved)>1)
+    {
+      
+      for (i in 1:length(saved)) {
+        if(!is.na(saved[[i]])   ){
+          if(i<length(saved)){
+            saved[[i+1]]<-NA
+          }else{
+            saved[[1]]<-NA
+          }
+          
+        }
+      }
+      saved<-saved[!is.na(saved)]
+    }
+    saved
+    
+  }
+
+
+
+
+
+
+# My own
+n <- 5
+
+x <- rep(1, n)
+i <- n
+while (i > 0) {
+  remainder <- i %% 2
+  if (remainder == 0) {
+    x[[i]] <- 0
+  }
+  i <- i - 1
+}
+
+while (i > 0) {
+  if (x[i] == 1) {
+    x[1] <- 0
+  }
+  
+}
+
+
+
+
+
+
+
 

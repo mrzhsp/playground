@@ -1,30 +1,121 @@
 ---
 title: "Playground 001 RMarkdown"
 author: "Mohamadreza Hoseinpour"
-date: "8/8/2019"
+date: "October 4, 2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo = FALSE, results = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(euR)
+library(knitr)
+library(gtrendsR)
 ```
 
-## R Markdown
+# R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This is an R Markdown document. Markdown is a simple formatting syntax for 
+authoring HTML, PDF, and MS Word documents. For more details on using R Markdown
+see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Part 1
+Here, we are going to test some basic functionalities. We can have headers in 
+multiple levels and sizes. These headers can also be used as segmentation tool.
 
-```{r cars}
+### Part 1.1) Italic & Bold
+We can also have *italic* and **bold** texts.
+
+### Part 1.2) Unordered List
+We can have bulleted lists like:
+
+* Item 1
+  * Item 1.1
+    * Item 1.1.1
+* Item 2
+  * Item 2.1
+    * item 2.1.1
+    
+### Part 1.3) Ordered List
+We can also have ordered lists like:
+
+1. Item 1
+   a. Item 1.a
+   b. Item 1.b
+2. Item 2
+   a. Item 2.a
+   b. Item 2.b
+   
+### Part 1.4) Tables
+We can also create simple and complex tables
+
+First Header | Second Header | Third Header
+-|-|-
+Cell 1 | Cell 2 | Cell 7 |
+Cell 3 | Cell 4
+Cell 5 | Cell 6
+
+This is another table that we can use with code:
+
+```{r mtcars_table, echo=FALSE}
+kable(mtcars)
+```
+
+### Part 1.5) Equations
+We can also write some nice equations
+
+$$ y = x\beta + \varepsilon $$
+
+We can also use inline questions like: $\hat{\beta} = (x ^ {T} x)^{-1} x^{t} y$
+
+### Part 1.6) Code Chunks
+
+When you click the **Knit** button a document will be generated that includes 
+both content as well as the output of any embedded R code chunks within the 
+document. You can embed an R code chunk like this:
+
+```{r cars, echo = FALSE}
 summary(cars)
 ```
+---
+```{r mtcars, include = TRUE, echo = FALSE}
+map_df(mtcars, mean)
+```
 
-## Including Plots
+We can also use inline codes like: The mean of column "mpg" in databse "mtcars"
+is `r mean(mtcars$mpg)` . In addition, we can highlight code inline like: 
+The mean can be calculated by using the code: `mean()` .
+
+### Part 1.7) Including Plots
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r pressure, echo=FALSE, fig.align='left', fig.width=5, fig.height=5}
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent 
+printing of the R code that generated the plot.
+
+#### Part 1 - Example 1
+We use data on `r nrow(mtcars)` cars featured in the magazine **Motor Trend** in 
+1974. This it what the data look like:
+```{r echo = FALSE} 
+kable ( mtcars )
+```
+
+#### Part 1 - Example 2: Miles per gallon vs weight
+
+Now we look at how fuel consumption is related to weight.
+
+```{r, echo = FALSE, fig.align = "center"}
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl), size = qsec)) +
+geom_point() 
+```
+
+#### Part 1 - Example 3: AI Leadership search trend
+
+```{r AI Leadership, echo=FALSE}
+gtrends(c("AI Leadership"),
+        time = "all")
+```
