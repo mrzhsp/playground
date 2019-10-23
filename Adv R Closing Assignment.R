@@ -87,12 +87,80 @@ pos_5 <- find_next_position(ratio = retail_stocks$ratio, k = 3.25)
 pos_5
 
 # Question 1.b) ------------------------------------------------------------
+ratio <- retail_stocks$ratio
+data <- as.data.frame(ratio)
+starting_from <- 1
+k <- 1.25
+m <- mean_ratio_retail_stocks
+s <- sd_ratio_retail_stocks
+condition1 <- m - k * s
+condition2 <- m + k * s
+min_data <- min(data)
+max_data <- max(data)
+i <- 1
+
+find_all_positions <- function (ratio, k = 1, m, s) {
+  if ((m - k * s) < min(data) & (m + k * s) > max(data)) {
+    return(list())
+    } else {
+      starting_from <- 1
+      i <- 1
+      positions <- vector("list", i)
+      positions[[i]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                           starting_from, k = 1.25)
+      names(positions) <- paste("position", 1, sep = "_")
+      while (map(positions, 2)[[i]] < nrow(data)) {
+        starting_from <- map(positions, 2)[[i]]
+        i <- i + 1
+        positions[[i]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                               starting_from, k = 1.25)
+        names(positions) <- paste("position", 1:i, sep = "_")
+      }
+    }
+}
 
 
 
 
+  if ((m - k * s) < min(data) & (m + k * s) > max(data)) {
+    return(list())
+  } else {
+    starting_from <- 1
+    i <- 1
+    positions <- vector("list", i)
+    positions[[i]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                         starting_from, k = 1.25)
+    names(positions) <- paste("position", 1, sep = "_")
+    while (map(positions, 2)[[i]] < nrow(data)) {
+      starting_from <- map(positions, 2)[[i]]
+      i <- i + 1
+      positions[[i]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                           starting_from, k = 1.25)
+      names(positions) <- paste("position", 1:i, sep = "_")
+    }
+  }
 
+if (length(all_positions) > 0) {
+  names(all_positions) <- paste("position", 1:(i - 1), sep = "_")
+}
+all_positions
+}
 
+positions <- vector("list", 1)
+positions[[1]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                         starting_from = 1, k = 1.25)
+positions[[2]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                         starting_from = map(positions, 2)[[1]],
+                                         k = 1.25)
+positions[[3]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                     starting_from = map(positions, 2)[[2]],
+                                     k = 1.25)
+positions[[4]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                     starting_from = map(positions, 2)[[3]],
+                                     k = 1.25)
+positions[[5]] <- find_next_position(ratio = retail_stocks$ratio, 
+                                     starting_from = map(positions, 2)[[4]],
+                                     k = 1.25)
 
 # Dirty work for Q1.a)
 starting_from <- 1743
@@ -128,7 +196,7 @@ first_close <- if (open < m) {
 
 data[first_open:nrow(data), ] >= m
 
-ratio <- retail_stocks$ratio
+
 ratio[1:nrow(ratio), ]
 x <- nrow(retail_stocks)
 
@@ -142,3 +210,5 @@ if ((m - k * s) < min(data) & (m + k * s) > max(data)) {
 } else {
   result <- 0
 }
+
+(-0.2707*-0.2707)+(-0.8809*-0.8809)+(0.2526*0.2526)+(-0.2948*-0.2948)
