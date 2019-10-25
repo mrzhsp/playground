@@ -152,51 +152,197 @@ find_all_positions <- function(ratio, k, m = mean(ratio),
   }
   return(positions)
 }
+
+## Testing the function
 positions <- find_all_positions(ratio = retail_stocks$ratio, k = 1.25)
 
 # Question 2.a) -------------------------------------------------------------------
 
+#' Title Profit for a Position
+#'
+#' @param position A given position including opening and closing indices.
+#' @param stock_a The daily price for the first stock.
+#' @param stock_b The daily price for the second stock.
+#' @param m The average of the ratio of the two stocks.
+#' @param p The proportion commission for a transaction which %p of a 
+#'          transaction.
+#'
+#' @return A numeric vector including the profit for stock_a, profit for stock_b
+#'         cost for the whole transaction, and the total profit.
+#' @export
+#'
+#' @examples
 position_profit <- function(position, stock_a, stock_b,
                             m = mean(stock_a / stock_b), p = 0.01) {
+  #' Turn the input into a dataframe.
+  data <- as.data.frame(stock_a / stock_b)
+  #' Compute the mean of the ratio of the two stocks
+  m <- mean(stock_a / stock_b)
+  #' Compute the unit of stock_a to be bought or sold. 
+  open_unit <- as.numeric(1 / stock_a[position][[1]])
+  #' Compute the unit of stock_b to be bought or sold.
+  close_unit <- as.numeric(1 / stock_b[position][[1]])
+  #' Compute the revenue from buying or selling stock_a.
+  revenue_a <- open_unit * as.numeric(stock_a[position][[2]])
+  #' Compute the revenue from buying or selling stock_b.
+  revenue_b <- close_unit * as.numeric(stock_b[position][[2]])
+  #' This is the condition check that determines the buying or selling of stock.
+  #'   It is based on the opening position to be either below or above mean. if 
+  #'   it is below mean, then it computes the profit based on "buying stock_a
+  #'   and selling stock_b". If it is above mean, then it computes the profit
+  #'   based on "selling stock_a and buying stock_b".
+  if ((stock_a / stock_b)[position][[1]] < m) {
+    profit_stock_a <- round((revenue_a - 1), 5)
+    profit_stock_b <- round((1- revenue_b), 5)
+  } else {
+    profit_stock_a <- -round((revenue_a - 1), 5)
+    profit_stock_b <- -round((1 - revenue_b), 5)
+  }
+  #' Compute the cost and profit.
+  cost <- -round((2 * p + (revenue_a + revenue_b) * p), 5)
+  profit <- round((profit_stock_a + profit_stock_b + cost), 5)
+  #' The output of the function in terms of a numeric vector.
+  output <- c(profit_stock_a, profit_stock_b, cost, profit)
+  output
+}
+
+## Testing the function
+position_profit(pos_1, 
+                stock_a = retail_stocks$TGT,
+                stock_b = retail_stocks$WMT,
+                p = 0.01)
+position_profit(pos_2, 
+                stock_a = retail_stocks$TGT,
+                stock_b = retail_stocks$WMT,
+                p = 0.01)
+position_profit(pos_3, 
+                stock_a = retail_stocks$TGT,
+                stock_b = retail_stocks$WMT,
+                p = 0.01)
+position_profit(pos_4, 
+                stock_a = retail_stocks$TGT,
+                stock_b = retail_stocks$WMT,
+                p = 0.01)
+position_profit(pos_5, 
+                stock_a = retail_stocks$TGT,
+                stock_b = retail_stocks$WMT,
+                p = 0.01)
+
+# Question 2.b) -----------------------------------------------------------
+
+strategy_profit <- function (k, stock_a, stock_b,
+                             m = mean(stock_a / stock_b),
+                             sd = sd(stock_a / stock_b),
+                             p = 0.01) {
   
+  
+  positions <- find_all_positions(ratio = stock_a / stock_b, k)
+  disaggregate<- data.frame(matrix(ncol = 8, nrow = length(positions)))
+  colnames(disaggregate) <- c("position",
+                              "open",
+                              "close",
+                              "duration",
+                              "stock_a",
+                              "stock_b",
+                              "cost",
+                              "profit")
+  for (i in seq_along(positions)) {
+    profit_data <- position_profit(positions[[i]], 
+                                   stock_a = retail_stocks$TGT,
+                                   stock_b = retail_stocks$WMT,
+                                   p = 0.01)
+    disaggregate[i, ] <- c(names(positions)[i],
+                           as.numeric(map(positions, 1)[[i]]),
+                           as.numeric(map(positions, 2)[[i]]),
+                           as.numeric(map(positions, 2)[[i]]) - 
+                             as.numeric(map(positions, 1)[[i]]),
+                           profit_data[[1]],
+                           profit_data[[2]],
+                           profit_data[[3]],
+                           profit_data[[4]])
+  }
 }
 
-data <- as.data.frame(retail_stocks$ratio)
-x <- c(map(positions, 1)[[1]], map(positions, 2)[[1]])
-b <- retail_stocks[x, ]
-m <- mean(retail_stocks$ratio)
-p <- 0.01
-open_unit <- as.numeric(1 / b[1, 2])
-close_unit <- as.numeric(1 / b[1, 3])
-revenue_a <- open_unit * as.numeric(b[2, 2])
-revenue_b <- close_unit * as.numeric(b[2, 3])
-if (data[x[1], ] < m) {
-  profit_stock_a <- revenue_a - 1
-  profit_stock_b <- 1 - revenue_b
-} else {
-  profit_stock_a <- -(revenue_a - 1)
-  profit_stock_b <- -(1 - revenue_b)
+positions <- find_all_positions(ratio = stock_a / stock_b, k = 1.25)
+disaggregate<- data.frame(matrix(ncol = 8, nrow = length(positions)))
+for (i in seq_along(positions)) {
+  profit_data <- position_profit(positions[[i]], 
+                                 stock_a = retail_stocks$TGT,
+                                 stock_b = retail_stocks$WMT,
+                                 p = 0.01)
+  disaggregate[i, ] <- c(names(positions)[i],
+                             as.numeric(map(positions, 1)[[i]]),
+                             as.numeric(map(positions, 2)[[i]]),
+                             as.numeric(map(positions, 2)[[i]]) - 
+                               as.numeric(map(positions, 1)[[i]]),
+                             profit_data[[1]],
+                             profit_data[[2]],
+                             profit_data[[3]],
+                             profit_data[[4]])
 }
-cost <- -(2 * p + (revenue_a + revenue_b) * p)
-profit <- profit_stock_a + profit_stock_b + cost
-output <- c(profit_stock_a, profit_stock_b, cost, profit)
-output
 
-profit_stock_a <- revenue_a - 1
-profit_stock_b <- 1 - revenue_b
-cost <- -(2 * p + (revenue_a + revenue_b) * p)
-profit <- stock_a + stock_b + cost
-output <- c(profit_stock_a, profit_stock_b, cost, profit)
-output
 
-if (data[x[1], ] < m) {
-  revenue_a <- open_unit * as.numeric(b[2, 2])
-  revenue_b <- close_unit * as.numeric(b[2, 3])
-  profit_stock_a <- revenue_a - 1
-  profit_stock_b <- 1 - revenue_b
-  cost <- -(2 * p + (revenue_a + revenue_b) * p)
-  profit <- stock_a + stock_b + cost
+# Atabak:
+positions <- find_all_positions(ratio = stock_a / stock_b, k = 1.25)
+disaggregate<- data.frame(matrix(ncol = 8, nrow = length(positions)))
+colnames(disaggregate)<-c("position","open","close","duration" ,"stock_a",
+                          "stock_b","cost","profit")
+for (i in seq_along(positions)){
+  profitInfo<-position_profit(positions[[i]],stock_a,stock_b,m,p)
+  disaggregate[i,] = c(names(positions[i]),
+                       positions[[i]][[1]],
+                       positions[[i]][[2]],
+                       positions[[i]][[2]] - positions[[i]][[1]],
+                       round(profitInfo[[1]],digits=5),
+                       round(profitInfo[[2]],digits=5),
+                       round(profitInfo[[3]],digits=5),
+                       round(profitInfo[[4]],digits=4))
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+disaggregate <- matrix(nrow = length(positions), ncol = 8)
+colnames(disaggregate) <- c("positon",
+                            "open",
+                            "close",
+                            "duration",
+                            "stock_a",
+                            "stock_b",
+                            "cost",
+                            "profit")
+
+
+
+
+output1 <- vector("list", length(positions))
+for (i in seq_along(positions)) {
+  output1[i] <- position_profit(positions[[i]], 
+                  stock_a = retail_stocks$TGT,
+                  stock_b = retail_stocks$WMT,
+                  p = 0.01)
+}
+output1
+
+
+
+
+
+
+
+
 
 
 # Dirty Work for Q1.a) ----------------------------------------------------
@@ -302,3 +448,30 @@ condition2 <- m + k * s
 min_data <- min(data)
 max_data <- max(data)
 i <- 1
+
+# Dirty Work for Q2.a) ----------------------------------------------------
+data <- as.data.frame(retail_stocks$ratio)
+x <- c(map(positions, 1)[[1]], map(positions, 2)[[1]])
+b <- retail_stocks[x, ]
+m <- mean(retail_stocks$ratio)
+p <- 0.01
+open_unit <- as.numeric(1 / b[1, 2])
+close_unit <- as.numeric(1 / b[1, 3])
+revenue_a <- open_unit * as.numeric(b[2, 2])
+revenue_b <- close_unit * as.numeric(b[2, 3])
+if (data[x[1], ] < m) {
+  profit_stock_a <- revenue_a - 1
+  profit_stock_b <- 1 - revenue_b
+} else {
+  profit_stock_a <- -(revenue_a - 1)
+  profit_stock_b <- -(1 - revenue_b)
+}
+cost <- -(2 * p + (revenue_a + revenue_b) * p)
+profit <- profit_stock_a + profit_stock_b + cost
+output <- c(profit_stock_a, profit_stock_b, cost, profit)
+output
+
+
+# Dirty Work for Q2.b) ----------------------------------------------------
+
+
