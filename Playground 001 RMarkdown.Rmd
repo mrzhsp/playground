@@ -5,7 +5,7 @@ date: "October 4, 2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE, echo = FALSE, results = FALSE}
+```{r setup, include=FALSE, echo=FALSE, results=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(euR)
@@ -101,7 +101,7 @@ printing of the R code that generated the plot.
 We use data on `r nrow(mtcars)` cars featured in the magazine **Motor Trend** in 
 1974. This it what the data look like:
 ```{r echo = FALSE} 
-kable ( mtcars )
+kable(mtcars)
 ```
 
 #### Part 1 - Example 2: Miles per gallon vs weight
@@ -110,12 +110,13 @@ Now we look at how fuel consumption is related to weight.
 
 ```{r, echo = FALSE, fig.align = "center"}
 ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl), size = qsec)) +
-geom_point() 
+  geom_point()
 ```
 
 #### Part 1 - Example 3: AI Leadership search trend
 
 ```{r AI Leadership, echo=FALSE}
 gtrends(c("AI Leadership"),
-        time = "all")
+  time = "all"
+)
 ```
