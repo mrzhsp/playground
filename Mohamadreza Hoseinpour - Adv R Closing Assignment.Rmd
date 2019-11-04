@@ -1,16 +1,26 @@
-# ------------------------------------------- #
-# Topic: ERIM Advanced R: Closing Assignment
-# Author: Mohamadreza Hoseinpour
-# Student ID: 518801
-# ------------------------------------------- #
+---
+title: "Adv R Closing Assignment"
+author: "Mohamadreza Hoseinpour"
+date: "November 4th, 2019"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
 
-# Initial Setup -----------------------------------------------------------
-## Requirements
+```{r Initial Setup, include=FALSE, echo=FALSE, results=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(knitr)
 library(tinytex)
 load("stocks.RData")
+```
 
-## Getting a sense of data
+#### Prologue: Getting a sense of Data
+In this section, I created the example data and the graph based on which I 
+developed the required functions for the rest of the questions.
+
+```{r, Prologue, echo=FALSE, fig.align = "center", fig.height = 3}
 start_date <- as.Date("1990-01-01")
 end_date <- as.Date("2015-12-31")
 retail_stocks <- stocks %>%
@@ -28,9 +38,11 @@ ggplot(retail_stocks, aes(x = date, y = ratio)) +
     sd_ratio_retail_stocks * k), color = "red") +
   geom_hline(aes(yintercept = mean_ratio_retail_stocks -
     sd_ratio_retail_stocks * k), color = "red")
+```
 
-# Question 1.a) -----------------------------------------------------------
+#### Question 1.a) Developing the Function for "Finding Next Position"
 
+```{r Q1.a, echo=TRUE}
 #' Title: Find Next Position
 #'        Which finds the opening and closing indices of the first new position
 #'        on or after a given starting day.
@@ -84,8 +96,11 @@ find_next_position <- function(ratio, starting_from = 1, k,
     }
   }
 }
+```
 
-## Testing the function
+#### Question 1.a) Testing the Function
+To test the function, I used the retail_stocks mentioned in the assignment.
+``` {r, Test Q1.a, echo=FALSE}
 pos_1 <- find_next_position(
   ratio = retail_stocks$ratio,
   k = 1.25
@@ -112,9 +127,17 @@ pos_4
 retail_stocks[pos_4, ]
 pos_5 <- find_next_position(ratio = retail_stocks$ratio, k = 3.25)
 pos_5
+```
 
-# Question 1.b) ------------------------------------------------------------
+As we can see, if we put a large value of **"k"** in this function, such as:
+``` {r, Test Q1.a NA, echo=TRUE}
+pos_5 <- find_next_position(ratio = retail_stocks$ratio, k = 3.25)
+```
+Then it results in finding no position. Hence, a length zero integer vector will
+return. `r pos_5`
 
+#### Question 1.b) Developing the Function for "Finding All Positions"
+```{r Q1.b, echo=TRUE}
 #' Title: Find All Positons
 #'        Which finds all the opening and closing indices.
 #' @param ratio: The daily price ratio for the two stocks (a numeric vector).
@@ -156,12 +179,15 @@ find_all_positions <- function(ratio, k, m = mean(ratio),
   }
   return(positions)
 }
+```
 
-## Testing the function
+#### Question 1.b) Testing the Function
+``` {r, Test Q1.b, echo=FALSE}
 find_all_positions(ratio = retail_stocks$ratio, k = 1.25)
+```
 
-# Question 2.a) -------------------------------------------------------------------
-
+#### Question 2.a) Developing the Function for "Profit for Positions"
+```{r Q2.a, echo=TRUE}
 #' Title: Profit for a Position
 #'
 #' @param position: A given position including opening and closing indices.
@@ -177,7 +203,7 @@ find_all_positions(ratio = retail_stocks$ratio, k = 1.25)
 #'
 #' @examples
 position_profit <- function(position, stock_a, stock_b,
-                            m = mean(stock_a / stock_b), p = 0.01) {
+                            m = mean(stock_a / stock_b), p) {
   #' Compute the ratio of stocks.
   ratio <- stock_a[position][1] / stock_b[position][1]
   #' Compute the mean of the ratio of the two stocks
@@ -211,8 +237,10 @@ position_profit <- function(position, stock_a, stock_b,
            "cost" = cost, 
            "profit" = profit))
 }
+```
 
-## Testing the function
+#### Question 2.a) Testing the Function
+``` {r, Test Q2.a, echo=FALSE}
 position_profit(pos_1,
   stock_a = retail_stocks$TGT,
   stock_b = retail_stocks$WMT,
@@ -233,14 +261,10 @@ position_profit(pos_4,
   stock_b = retail_stocks$WMT,
   p = 0.01
 )
-position_profit(pos_5,
-  stock_a = retail_stocks$TGT,
-  stock_b = retail_stocks$WMT,
-  p = 0.01
-)
+```
 
-# Question 2.b) -----------------------------------------------------------
-
+#### Question 2.b) Developing the function for "Profit for All Positions"
+```{r Q2.b, echo=TRUE}
 #' Title: Profit of Strategy
 #'        Which calculate and aggregate the profit for all positions resulting
 #'        from a certain strategy.
@@ -263,7 +287,7 @@ position_profit(pos_5,
 strategy_profit <- function(k, stock_a, stock_b,
                             m = mean(stock_a / stock_b),
                             sd = sd(stock_a / stock_b),
-                            p = 0.01) {
+                            p) {
   #' Find all positions using the function from the previous part.
   positions <- find_all_positions(ratio = stock_a / stock_b, k)
   #' Producing the output format (in the shape of a dataframe as shown in the
@@ -276,8 +300,8 @@ strategy_profit <- function(k, stock_a, stock_b,
     profit_data <- position_profit(positions[[i]],
       stock_a,
       stock_b,
-      p
-    )
+      p = 0.01
+      )
     disaggregate[i, ] <- c(
       names(positions)[i],
       map(positions, 1)[[i]],
@@ -327,17 +351,20 @@ strategy_profit <- function(k, stock_a, stock_b,
   )
   return(list("aggregate" = aggregate, "disaggregate" = disaggregate))
 }
+```
 
-## Testing the function
+#### Question 2.b) Testing the Function
+``` {r, Test Q2.b, echo=FALSE}
 strategy_profit(
   k = 1.25,
   stock_a = retail_stocks$TGT,
   stock_b = retail_stocks$WMT,
   p = 0.01
 )
+```
 
-# Question 2.c) -----------------------------------------------------------
-
+#### Question 2.c) Developing the function for "Strategy Assessment"
+```{r Q2.c, echo=TRUE}
 #' Title: Assessment of Strategy
 #'
 #' @param start_k: Starting value of k.
@@ -361,7 +388,7 @@ assess_strategy <- function(start_k,
                             stock_b,
                             m = mean(stock_a / stock_b),
                             sd = sd(stock_a / stock_b),
-                            p = 0.01) {
+                            p) {
   #' Set the interval for k.
   interval <- seq(start_k, end_k, step_k)
   #' Producing the output format (in the shape of a dataframe as shown in the
@@ -402,8 +429,10 @@ assess_strategy <- function(start_k,
   )
   return(assessment)
 }
+```
 
-## Testing the function
+#### Question 2.c) Testing the Function
+``` {r, Test Q2.c, echo=FALSE}
 assess_strategy(0.5,
   2,
   0.25,
@@ -411,9 +440,12 @@ assess_strategy(0.5,
   stock_b = retail_stocks$WMT,
   p = 0.01
 )
+```
 
-# Question 3) -------------------------------------------------------------
-# Inserting the data as requested.
+#### Question 3) Applying Pairs Trading
+According to the instructions, I create three datasets for training,
+validation, and testing. Below is the code for creating the datasets:
+``` {r, Datasets Q3, echo=TRUE}
 training_start_date <- as.Date("1990-01-01")
 training_end_date <- as.Date("1994-12-31")
 q3_training_data <- stocks %>%
@@ -432,281 +464,64 @@ q3_testing_data <- stocks %>%
   filter(date >= testing_start_date, date <= testing_end_date) %>%
   select(date, PEP, CVX) %>%
   mutate(ratio = PEP / CVX)
+```
 
-# Estimate m from (q3_training_data)
+Second, I estimate the *m* and *s* based on training data. Then, I assess the
+strategy based on the validation data to see for which **"k"** I get the maximum 
+profit.
+``` {r, Estimate_training_1 Q3, echo=FALSE, fig.align = "center", fig.height = 3}
 m_training <- mean(q3_training_data$ratio)
 sd_training <- sd(q3_training_data$ratio)
 
-# Find an optimal value of k using the (q3_validation_data)
 output1 <- validation_data_assessment <- assess_strategy(0,
-                                                         2,
-                                                         0.1,
-                                                         stock_a = q3_validation_data$PEP,
-                                                         stock_b = q3_validation_data$CVX,
-                                                         m = m_training,
-                                                         sd = sd_training,
-                                                         p = 0.01
+  2,
+  0.1,
+  stock_a = q3_validation_data$PEP,
+  stock_b = q3_validation_data$CVX,
+  m = m_training,
+  sd = sd_training,
+  p = 0.01
 )
-output1
 ggplot(output1, aes(x = k, y = total)) + 
   geom_line(color = "blue") +
   geom_vline(aes(xintercept = output1$k[which(output1[,
                                                       7] == max(output1$total))], color = "red"))
+```
+According to the results, a k of **`r output1$k[which(output1[,7] == max(output1$total))]`** yields the highest profit. To have a more precise estimate, I estimate the k with steps 
+of 0.005 in 0.4 to 1 interval.
+``` {r, Estimate_training_2 Q3, echo=FALSE, fig.align = "center", fig.height = 3}
+m_training <- mean(q3_training_data$ratio)
+sd_training <- sd(q3_training_data$ratio)
 
 output2 <- validation_data_assessment <- assess_strategy(0.4,
-                                                         1,
-                                                         0.005,
-                                                         stock_a = q3_validation_data$PEP,
-                                                         stock_b = q3_validation_data$CVX,
-                                                         m = m_training,
-                                                         sd = sd_training,
-                                                         p = 0.01
+  1,
+  0.005,
+  stock_a = q3_validation_data$PEP,
+  stock_b = q3_validation_data$CVX,
+  m = m_training,
+  sd = sd_training,
+  p = 0.01
 )
-output2
 ggplot(output2, aes(x = k, y = total)) + 
   geom_line(color = "blue") +
   geom_vline(aes(xintercept = output2$k[which(output2[,
                                                       7] == max(output2$total))], color = "red"))
+```
+This would result in a **"k"** of **`r output2$k[which(output2[,7] == max(output2$total))]`**
+which will be used for estimating the final profit.
 
-
-# Estimate m from (q3_validation_data)
+By using *m* and *s* estimated on validation data and **"k = `r output2$k[which(output2[,7] == max(output2$total))]`"**, I can compute the total profit for this strategy.
+``` {r, Result Q3, echo=FALSE}
 m_validation <- mean(q3_validation_data$ratio)
 sd_validation <- sd(q3_validation_data$ratio)
 
-output3 <- testing_data_assessment <- assess_strategy(0,
-  2,
-  0.1,
-  stock_a = q3_testing_data$PEP,
-  stock_b = q3_testing_data$CVX,
-  m = m_validation,
-  sd = sd_validation,
-  p = 0.01
-)
-output3
-
-ggplot(output2, aes(x = k, y = total)) + geom_point()
-
-output3 <- testing_data_assessment <- assess_strategy(0,
-                                                      2,
-                                                      0.01,
-                                                      stock_a = q3_testing_data$PEP,
-                                                      stock_b = q3_testing_data$CVX,
-                                                      m = m_validation,
-                                                      sd = sd_validation,
-                                                      p = 0.01
-)
-output3
-
-ggplot(output3, aes(x = k, y = total)) + geom_point()
-
-strategy_profit(
-  k = 1.3,
-  stock_a = q3_testing_data$PEP,
-  stock_b = q3_testing_data$CVX,
-  p = 0.01
-)$aggregate[6]
-
-
-strategy_profit(
+output3 <- strategy_profit(
   k = output2$k[which(output2[,7] == max(output2$total))],
   stock_a = q3_testing_data$PEP,
   stock_b = q3_testing_data$CVX,
   m = m_validation,
   s = sd_validation,
   p = 0.01
-)
-
-
-
-# Dirty Work for Q1.a) ----------------------------------------------------
-starting_from <- 1743
-k <- 4
-m <- mean_ratio_retail_stocks
-s <- sd_ratio_retail_stocks
-condition1 <- m - k * s
-condition2 <- m + k * s
-min_data <- min(data)
-max_data <- max(data)
-
-## Calcualtion
-first_open <- which(retail_stocks$ratio < m - k * s |
-  retail_stocks$ratio > m + k * s)[1]
-open <- retail_stocks$ratio[first_open]
-data_new <- slice(retail_stocks, first_open:n())
-first_close <- if (open < m) {
-  which(data_new$ratio >= m)[1] + first_open - 1
-} else {
-  which(data_new$ratio <= m)[1] + first_open - 1
-}
-# goooz
-data <- as.data.frame(ratio)
-first_open <- which(data[starting_from:nrow(data), ] < m - k * s |
-  data[starting_from:nrow(data), ] > m + k * s)[1] +
-  (starting_from - 1)
-open <- ratio[first_open]
-first_close <- if (open < m) {
-  which(data[first_open:nrow(data), ] >= m)[1] + first_open - 1
-} else {
-  which(data[first_open:nrow(data), ] <= m)[1] + first_open - 1
-}
-
-data[first_open:nrow(data), ] >= m
-
-
-ratio[1:nrow(ratio), ]
-x <- nrow(retail_stocks)
-
-## Output
-pos_1 <- c(first_open, first_close)
-retail_stocks[pos_1, ]
-
-
-
-# Dirty Work for Q1.b) ----------------------------------------------------
-data <- as.data.frame(ratio)
-if ((m - k * s) < min(data) & (m + k * s) > max(data)) {
-  return(list())
-} else {
-  starting_from <- 1
-  i <- 1
-  positions <- vector("list", i)
-  positions[[i]] <- find_next_position(
-    ratio = retail_stocks$ratio,
-    starting_from, k = 1.25
-  )
-  names(positions) <- paste("position", 1, sep = "_")
-  while (map(positions, 2)[[i]] < nrow(data)) {
-    starting_from <- map(positions, 2)[[i]]
-    i <- i + 1
-    positions[[i]] <- find_next_position(
-      ratio = retail_stocks$ratio,
-      starting_from, k = 1.25
-    )
-    names(positions) <- paste("position", 1:i, sep = "_")
-  }
-}
-
-positions <- vector("list", 1)
-positions[[1]] <- find_next_position(
-  ratio = retail_stocks$ratio,
-  starting_from = 1, k = 1.25
-)
-positions[[2]] <- find_next_position(
-  ratio = retail_stocks$ratio,
-  starting_from = map(positions, 2)[[1]],
-  k = 1.25
-)
-positions[[3]] <- find_next_position(
-  ratio = retail_stocks$ratio,
-  starting_from = map(positions, 2)[[2]],
-  k = 1.25
-)
-positions[[4]] <- find_next_position(
-  ratio = retail_stocks$ratio,
-  starting_from = map(positions, 2)[[3]],
-  k = 1.25
-)
-positions[[5]] <- find_next_position(
-  ratio = retail_stocks$ratio,
-  starting_from = map(positions, 2)[[4]],
-  k = 1.25
-)
-
-ratio <- retail_stocks$ratio
-data <- as.data.frame(ratio)
-starting_from <- 1
-k <- 1.25
-m <- mean_ratio_retail_stocks
-s <- sd_ratio_retail_stocks
-condition1 <- m - k * s
-condition2 <- m + k * s
-min_data <- min(data)
-max_data <- max(data)
-i <- 1
-
-# Dirty Work for Q2.a) ----------------------------------------------------
-data <- as.data.frame(retail_stocks$ratio)
-x <- c(map(positions, 1)[[1]], map(positions, 2)[[1]])
-b <- retail_stocks[x, ]
-m <- mean(retail_stocks$ratio)
-p <- 0.01
-open_unit <- as.numeric(1 / b[1, 2])
-close_unit <- as.numeric(1 / b[1, 3])
-revenue_a <- open_unit * as.numeric(b[2, 2])
-revenue_b <- close_unit * as.numeric(b[2, 3])
-if (data[x[1], ] < m) {
-  profit_stock_a <- revenue_a - 1
-  profit_stock_b <- 1 - revenue_b
-} else {
-  profit_stock_a <- -(revenue_a - 1)
-  profit_stock_b <- -(1 - revenue_b)
-}
-cost <- -(2 * p + (revenue_a + revenue_b) * p)
-profit <- profit_stock_a + profit_stock_b + cost
-output <- c(profit_stock_a, profit_stock_b, cost, profit)
-output
-
-
-# Dirty Work for Q2.b) ----------------------------------------------------
-
-positions <- find_all_positions(ratio = stock_a / stock_b, k = 1.25)
-disaggregate <- data.frame(matrix(ncol = 8, nrow = length(positions)))
-for (i in seq_along(positions)) {
-  profit_data <- position_profit(positions[[i]],
-    stock_a = retail_stocks$TGT,
-    stock_b = retail_stocks$WMT,
-    p = 0.01
-  )
-  disaggregate[i, ] <- c(
-    names(positions)[i],
-    as.numeric(map(positions, 1)[[i]]),
-    as.numeric(map(positions, 2)[[i]]),
-    as.numeric(map(positions, 2)[[i]]) -
-      as.numeric(map(positions, 1)[[i]]),
-    profit_data[[1]],
-    profit_data[[2]],
-    profit_data[[3]],
-    profit_data[[4]]
-  )
-}
-
-positions <- find_all_positions(ratio = stock_a / stock_b, k = 1.25)
-disaggregate <- data.frame(matrix(ncol = 8, nrow = length(positions)))
-colnames(disaggregate) <- c(
-  "position", "open", "close", "duration", "stock_a",
-  "stock_b", "cost", "profit"
-)
-for (i in seq_along(positions)) {
-  profitInfo <- position_profit(positions[[i]], stock_a, stock_b, m, p)
-  disaggregate[i, ] <- c(
-    names(positions[i]),
-    positions[[i]][[1]],
-    positions[[i]][[2]],
-    positions[[i]][[2]] - positions[[i]][[1]],
-    round(profitInfo[[1]], digits = 5),
-    round(profitInfo[[2]], digits = 5),
-    round(profitInfo[[3]], digits = 5),
-    round(profitInfo[[4]], digits = 4)
-  )
-}
-
-disaggregate <- matrix(nrow = length(positions), ncol = 8)
-colnames(disaggregate) <- c(
-  "positon",
-  "open",
-  "close",
-  "duration",
-  "stock_a",
-  "stock_b",
-  "cost",
-  "profit"
-)
-output1 <- vector("list", length(positions))
-for (i in seq_along(positions)) {
-  output1[i] <- position_profit(positions[[i]],
-    stock_a = retail_stocks$TGT,
-    stock_b = retail_stocks$WMT,
-    p = 0.01
-  )
-}
-output1
+)[1]
+```
+Therefore, the **"Total Profit"** is equal to **`r output3$aggregate[6]`**.
