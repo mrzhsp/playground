@@ -1,8 +1,11 @@
 ---
 title: "Playground 001 RMarkdown"
 author: "Mohamadreza Hoseinpour"
-date: "October 4, 2019"
-output: html_document
+date: "April 10, 2020"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE, echo=FALSE, results=FALSE}
@@ -10,7 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(euR)
 library(knitr)
-library(gtrendsR)
+library(tinytex)
+# library(gtrendsR)
 ```
 
 # R Markdown
@@ -116,7 +120,8 @@ ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl), size = qsec)) +
 #### Part 1 - Example 3: AI Leadership search trend
 
 ```{r AI Leadership, echo=FALSE}
-gtrends(c("AI Leadership"),
-  time = "all"
-)
+#' Apparently, a code t oget trends. The library is included in library section.
+# gtrends(c("AI Leadership"),
+  # time = "all"
+# )
 ```

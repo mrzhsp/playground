@@ -7,7 +7,7 @@ library(colorspace)
 library(GGally)
 
 # Intro R, Data Visualization ------------------------------------------------
-# Task 1:
+
 View(mpg)
 ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
@@ -44,6 +44,8 @@ ggplot(data = mpg, aes(x = displ, y = hwy, color = drv)) +
   geom_smooth(method = "lm", se = FALSE)
 
 ?euR
+
+RColorBrewer::display.brewer.all()
 
 # List all data sets in a package
 data(package = "euR")
