@@ -3,9 +3,9 @@ title: "Playground 001 RMarkdown"
 author: "Mohamadreza Hoseinpour"
 date: "April 10, 2020"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE, echo=FALSE, results=FALSE}

@@ -2,7 +2,13 @@
 title: "Playground 002 RMarkdown"
 author: "Mohamadreza Hoseinpour"
 date: "4/10/2020"
-output: pdf_document
+output:
+  pdf_document:
+    df_print: paged
+    fig_caption: yes
+    fig_crop: no
+  html_document:
+    df_print: paged
 ---
 
 ``` {r setup, include=FALSE, echo=FALSE, results=FALSE}
@@ -14,39 +20,65 @@ library(tinytex)
 
 ## Intro to R - ERIM Course
 
-Some exercies to sketch plots.
+### Part 1) Sketching plots
+In this section, I have sketched multiple plots with different features and aspects.
+```{r Plot1, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.height=3, fig.pos ="H"}
+ggplot(Prestige, aes(x = prestige, y = logincome, size = women)) +
+  geom_point(shape = 21, color = "black", fill = "red") +
+  geom_smooth(method = "lm", show.legend = FALSE) +
+  labs(title = "logincome vs Prestige")
 
-```{r plot1, echo=FALSE, message=FALSE, fig.align='center', fig.height=3, fig.width=5}
-ggplot(Prestige, aes(x = prestige, y = logincome)) +
-  geom_point(color = "red")
 ggplot(Prestige, aes(x = prestige)) +
-  geom_histogram()
+  geom_histogram() +
+  labs(title = "Histogram of Prestige")
+
 ggplot(data = mpg, aes(x = displ, y = hwy, color = drv)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE)
-ggplot(Prestige, aes(x = type, y = prestige)) + 
-  geom_boxplot()
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Engine Capacity vs. Hwy Fuel Consumption", caption = "The relationship is illustrated among different differentials")
+
 ggplot(mpg, aes(cty, hwy)) +
   geom_point() +
   facet_grid( ~ fl)
+
+ggplot(mpg, aes(x = class, fill = class)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Blues") +
+  labs(title = "Welcome", caption = "This is the subtitle")
+
 ggplot(mpg, aes(x = class, fill = class)) +
   geom_bar() +
   scale_fill_brewer(palette = "terrain_hcl")
+
 ggplot(mpg, aes(x = displ, y = hwy, color = class)) + 
   geom_point() +
   scale_color_brewer(palette = "Reds")
-ggplot(Feyenoord, aes(x = Year, y = Points)) +
-  geom_line() +
-  geom_hline(yintercept = 45, color = "red")
+
 ggplot(Prestige, aes(x = education, y = prestige, fill = type)) + 
   geom_point(shape = 21, size = 2) + 
   geom_smooth(method = "lm", se = FALSE)
+
 ggplot(mpg, aes(x = cty, y = hwy, fill = cty)) +
   geom_point(shape = 21, size = 3) +
   scale_fill_continuous(low = "white", high = "magenta")
+
 ggplot(mpg, aes(x = cyl)) + 
   geom_bar() +
   coord_flip()
+
+ggplot(Prestige, aes(x = type, y = prestige, fill = type)) +
+  geom_boxplot(show.legend = FALSE) +
+  labs(title = "Prestige of Type",
+       caption = "")
+
+ggplot(Eredivisie, aes(x = Year, y = Points, color = Team)) +
+  geom_line() +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("black", "red")) +
+  ylim(0, 120) +
+  geom_vline(aes(xintercept = 1996), color = "grey") +
+  geom_hline(aes(yintercept = c(8, 89)), color = "grey") +
+  labs(title = "Ajax vs. Feyenoord", caption = "Comparing the points of the two teams from year 1956 to 2016. A ylimit of (0-120) has been implemented.")
 ```
 
 
