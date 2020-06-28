@@ -3,12 +3,12 @@ title: "Playground 002 RMarkdown"
 author: "Mohamadreza Hoseinpour"
 date: "4/10/2020"
 output:
+  html_document:
+    df_print: paged
   pdf_document:
     df_print: paged
     fig_caption: yes
     fig_crop: no
-  html_document:
-    df_print: paged
 ---
 
 ``` {r setup, include=FALSE, echo=FALSE, results=FALSE}
@@ -71,9 +71,9 @@ ggplot(Prestige, aes(x = type, y = prestige, fill = type)) +
   labs(title = "Prestige of Type",
        caption = "")
 
-ggplot(Eredivisie, aes(x = Year, y = Points, color = Team)) +
-  geom_line() +
-  geom_point(size = 2) +
+ggplot() +
+  geom_line(aes(x = Year, y = Points, color = Team), Eredivisie) +
+  geom_point(aes(x = Year, y = Points, color = Team), Eredivisie) +
   scale_color_manual(values = c("black", "red")) +
   ylim(0, 120) +
   geom_vline(aes(xintercept = 1996), color = "grey") +
