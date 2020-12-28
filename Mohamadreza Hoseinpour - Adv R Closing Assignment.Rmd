@@ -3,9 +3,9 @@ title: "Adv R Closing Assignment"
 author: "Mohamadreza Hoseinpour"
 date: "November 4th, 2019"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r Initial Setup, include=FALSE, echo=FALSE, results=FALSE}
